@@ -1,0 +1,26 @@
+# Core dependencies for RF-DETR model conversion to ONNX and TensorRT
+# =====================================================================
+#
+# IMPORTANT: ONNX 1.19.1 is required for RF-DETR compatibility
+# See: https://github.com/blakeblackshear/frigate/discussions/21121
+#
+# Installation:
+#   pip install -r requirements.txt
+#
+# For TensorRT conversion, you'll also need:
+#   - TensorRT installed (via NVIDIA or nvidia-pyindex)
+#   - trtexec command available in PATH
+
+# ONNX dependencies (must pin to 1.19.1 for RF-DETR)
+onnx==1.19.1
+onnxsim
+onnx_graphsurgeon
+
+# RF-DETR model package with ONNX export support
+# This will automatically install torch, torchvision, transformers, etc.
+rfdetr[onnxexport]
+
+# ONNX Runtime for testing exported models
+# Choose one based on your system:
+onnxruntime-gpu  # For CUDA/GPU support
+# onnxruntime     # For CPU-only (uncomment if no GPU)
