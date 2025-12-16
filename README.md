@@ -278,6 +278,55 @@ Refer to the RF-DETR documentation for model-specific configurations.
 pip install onnx==1.19.1 --force-reinstall
 ```
 
+### Error: `module 'onnxruntime' has no attribute 'InferenceSession'`
+
+**Cause**: This usually indicates that `onnxruntime-gpu` is not properly installed or there's a conflict between `onnxruntime` and `onnxruntime-gpu`.
+
+**Solution**:
+
+1. **Make sure you're in the correct virtual environment**:
+   ```bash
+   # Windows
+   venv\Scripts\activate
+   
+   # Linux/macOS
+   source venv/bin/activate
+   ```
+
+2. **Clean reinstall onnxruntime-gpu**:
+   ```bash
+   pip uninstall onnxruntime onnxruntime-gpu -y
+   pip install onnxruntime-gpu
+   ```
+
+3. **Verify installation**:
+   ```bash
+   python -c "import onnxruntime as ort; print('Version:', ort.__version__); print('Has InferenceSession:', hasattr(ort, 'InferenceSession'))"
+   ```
+   
+   You should see:
+   ```
+   Version: 1.23.2 (or similar)
+   Has InferenceSession: True
+   ```
+
+**Note**: You should only have **one** of `onnxruntime` or `onnxruntime-gpu` installed, not both. Having both can cause conflicts.
+
+### Error: `CUDAExecutionProvider not available` or `Available providers: ['CPUExecutionProvider']`
+
+**Cause**: You have `onnxruntime` (CPU-only) installed instead of `onnxruntime-gpu`.
+
+**Solution**:
+
+```bash
+pip uninstall onnxruntime
+pip install onnxruntime-gpu
+```
+
+**Note**: This is separate from PyTorch CUDA support. You need both:
+- PyTorch with CUDA (for model training/export)
+- onnxruntime-gpu (for ONNX inference on GPU)
+
 ### Error: `AssertionError` during model building
 
 **Solution**: Make sure you're using the correct encoder name. For RF-DETR Nano, use `dinov2_windowed_small`, not `vit_tiny`.
@@ -297,6 +346,8 @@ pip install onnx==1.19.1 --force-reinstall
 ### Warnings During Export
 
 **TracerWarnings** are normal and expected during ONNX export with TorchScript. They indicate that some operations are being traced as constants, which is fine for fixed input shapes.
+
+**TF32 Deprecation Warning**: This is informational and will be addressed in future PyTorch versions. The code now uses the new API to suppress this warning.
 
 ## Workflow Details
 
